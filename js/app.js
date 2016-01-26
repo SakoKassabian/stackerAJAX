@@ -91,4 +91,46 @@ $(document).ready( function() {
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
 	});
+
+	$(".inspiration-getter").submit(function(e){
+		e.preventDefault();
+		$(".results").html("");
+		var answerers = $(this).find("input[name='answerers']").val();
+		getTopAnswerers(answerers);
+	});
 });
+
+////////////////////////////////////
+
+var getTopAnswerers = function(answerers){
+	var showSearchResults = function(query, resultNum) {
+	var results = resultNum + ' results for <strong>' + query + '</strong>';
+	return results;
+}
+	var request = {
+		tag: answerers,
+		site: "stackoverflow"
+	}
+
+	$.ajax({
+		url: "http://api.stackexchange.com/2.2/tags/" + request.tag + "/top-answerers/",
+		data: request,
+		dataType: "jsonp",//use jsonp to avoid cross origin issues
+		type: "GET"
+	})
+	.done(function(data){
+		var searchResults = showSearchResults(request.tag, data.items.length);
+		console.log(data);
+		console.log(data.items);
+		$('.search-results').html(searchResults);
+		$.each(data.items, function(i, item) {
+			var question = showQuestion(item);
+			$('.results').append(question);
+		});
+
+
+		
+		//$.each(result.item)	
+	})
+	.fail(function(){console.log("we failed!")});
+}
