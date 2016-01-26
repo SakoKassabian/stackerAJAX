@@ -103,28 +103,30 @@ $(document).ready( function() {
 ////////////////////////////////////
 
 var getTopAnswerers = function(answerers){
-	var showSearchResults = function(query, resultNum) {
-	var results = resultNum + ' results for <strong>' + query + '</strong>';
-	return results;
-}
+	
 	var request = {
 		tag: answerers,
 		site: "stackoverflow"
 	}
 
 	$.ajax({
-		url: "http://api.stackexchange.com/2.2/tags/" + request.tag + "/top-answerers/",
+		url: "http://api.stackexchange.com/2.2/tags/" + request.tag + "/top-answerers/all_time",
 		data: request,
 		dataType: "jsonp",//use jsonp to avoid cross origin issues
 		type: "GET"
 	})
 	.done(function(data){
 		var searchResults = showSearchResults(request.tag, data.items.length);
-		console.log(data);
-		console.log(data.items);
 		$('.search-results').html(searchResults);
+		var html = "";
 		$.each(data.items, function(i, item) {
-			var question = showQuestion(item);
+			console.log(item);
+			var question = "<p>Name: <a target='_blank' " +
+		'href=http://stackoverflow.com/users/' + item.user.user_id + ' >' +
+		item.user.display_name +
+		'</a></p>' +
+		'<p>Reputation: ' + item.user.reputation + '</p>';
+			
 			$('.results').append(question);
 		});
 
